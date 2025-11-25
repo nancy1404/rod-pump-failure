@@ -1,163 +1,163 @@
 # Rod Pump Failure Analysis (NSC325 Final Project)
 
-This project applies supervised machine learning to predict sucker rod pump failures and well productivity using operational, mechanical, and fluid-based well features. The dataset was provided by ConocoPhillips and contains over 50 features for ~2,600 wells. The goal is to minimize downtime, improve pump design, and inform maintenance using predictive analytics.
+This repository contains my portion of an industry-collaborative project from **NSC 325: Inventors Program – Energy** at UT Austin. We applied supervised machine learning to predict **sucker rod pump failures** and analyze **well productivity** using operational, mechanical, and fluid-based well features.
+
+The original dataset was provided by **ConocoPhillips** and includes more than 50 features for ~2,600 wells. Our goals were to:
+
+- Identify risk factors associated with rod pump failures and downtime  
+- Help minimize unplanned shutdowns and maintenance costs  
+- Explore design and operating conditions that improve pump reliability and well performance  
+
+> ⚠️ **Data Access Note**  
+> Due to data-sharing agreements with ConocoPhillips, the original well-level datasets are **not included** in this public repository.  
+> This repo focuses on the **modeling code, analysis workflow, and figures**, so the structure is reproducible on a similar dataset even though the raw CSVs are not available here.
+
+---
 
 ## Repository Structure
 
+```text
+.
+├── README.md                      # Project overview (this file)
+├── requirements.txt               # Python dependencies
+├── pyproject.toml                 # UV / project configuration
+├── uv.lock                        # Lockfile for deterministic environments
+├── confusingmatrix4nine.png       # Example confusion matrix figure
+├── src/
+│   └── nsc325_group1/
+│       └── __init__.py            # Helper functions / notes for the project
+└── notebooks/
+    ├── README.md                  # Notebook documentation & variable descriptions
+    ├── data_cleaning.ipynb        # STEP 1: Clean raw data, handle outliers, save cleaned CSV
+    ├── EDA.ipynb                  # STEP 2: Univariate & bivariate EDA
+    ├── feature_selection.ipynb    # STEP 3: Feature importance (RF, Lasso, RFE)
+    ├── updated_analysis.ipynb     # Earlier modeling attempt (kept for reference)
+    ├── updated2_analysis.ipynb    # STEP 4: Binary failure classifier + evaluation
+    ├── EDA_Modeling_Final.ipynb   # STEP 5: Final end-to-end modeling & uncertainty
+    ├── final_code.ipynb           # Consolidated core modeling pipeline
+    ├── analysis.ipynb             # Additional exploration / scratch work
+    ├── data_clean_no_transform.ipynb
+    ├── extendedLife.ipynb         # Extended lifetime analysis
+    ├── dataVisualizationUdated.ipynb
+    ├── rodPumpFailureIdentification.ipynb
+    ├── Modeling_Findings_Summary.md
+    ├── bootstrapped_accuracy_rf.png
+    ├── monte_carlo_accuracy_rf.jpg
+    └── uncertainty_visualization.png
+
+## Modeling Overview
+
+We framed two main prediction problems:
+
+### 1. Binary Classification – Failure vs. Non-Failure
+
+- **Target:** consolidated `failure_type` into a binary indicator (failure / no-failure)  
+- **Models:** Logistic Regression, Random Forest  
+- **Techniques:**
+  - Train/test split with cross-validation  
+  - Class imbalance handling (e.g., SMOTE in `updated2_analysis.ipynb`)  
+  - Evaluation using accuracy, precision, recall, F1-score, and confusion matrix  
+  - Uncertainty assessment with bootstrapping and Monte Carlo simulations  
+
+### 2. Regression – Pump Lifetime & Production
+
+- **Target (in some notebooks):** `bha_lifetime_log` (log-transformed lifetime)  
+- We explored how:
+  - Mechanical design  
+  - Pressure conditions  
+  - Fluid volumes  
+
+  relate to **pump lifetime** and **well production**.
+
+**Key engineered / impactful features included:**
+
+- Average tubing / casing / flowline pressures  
+- Average oil, water, and liquid volumes  
+- Gas anchor length and related geometric features  
+- Specific gravity of produced water  
+- Various rod / tubing configuration attributes  
+
+---
+
+## How to Run the Code Locally
+
+Because the original well-level data is private, you won’t be able to reproduce the **exact** results without a similar dataset. However, you can still:
+
+- Inspect the full modeling workflow  
+- Adapt the pipeline to your own dataset with a similar schema  
+
+### 1️⃣ Clone the Repository
+
 ```bash
-/data/
-    rodpump_failure_final.csv         # Original raw dataset
-    rod_cleaned_final.csv             # Cleaned and transformed dataset
-
-/notebooks/
-    data_cleaning.ipynb               # STEP 1: Cleans raw data, handles outliers, saves final CSV
-    EDA.ipynb                         # STEP 2: Univariate and bivariate visualizations
-    feature_selection.ipynb           # STEP 3: Identifies important features
-    updated_analysis.ipynb            # Older model attempt (not needed to rerun)
-    updated2_analysis.ipynb           # STEP 4: Binary classification models and evaluation
-    EDA_Modeling_Final.ipynb          # STEP 5: Final modeling, regression, uncertainty, plots
-    final_code.ipynb                  # Final consolidated version of all core modeling
-
-RPF Manuscript.docx                   # Final written report (with results, figures, and citations)
-requirements.txt                      # Python dependencies
-README.md                             # You're here!
-
-
-## How to Run
-
-> ⚠️ **Only the following notebooks are required to reproduce the full analysis:**
-> 
-> 1. `notebooks/data_cleaning.ipynb`
-> 2. `notebooks/EDA.ipynb`
-> 3. `notebooks/feature_selection.ipynb`
-> 4. `notebooks/updated2_analysis.ipynb`
-> 5. `notebooks/EDA_Modeling_Final.ipynb`
-
-
-1. Clone the Repo and Set up Environment
-2. Install Dependencies
-    pip install -r requrements.txt
-3. Run the Pipeline
--   open and run notebooks in order listed above. 
-
-## Developer Quick Start
-
-### Prerequisites
-
-- VSCode (IDE)
-- UV (Python Development Tool)
-- Git (and GitHub)
-
-#### VSCode/UV install for Windows
-
-1. Install WSL and VSCode by following these instructions. https://code.visualstudio.com/docs/remote/wsl
-    - Install the WSL with the Ubuntu distribution
-
-2. Install UV on the WSL side (Do not install it on the Windows side)
-
-    Open an WSL terminal (Ubuntu), navigate to the `$HOME` directory, run the install script. 
-    ```console
-    cd ~
-    curl -LsSf https://astral.sh/uv/install.sh | sh
-    ```
-
-#### VSCode/UV install for MacOS and Linux
-
-1. Install VSCode for your OS. https://code.visualstudio.com/Download
-
-2. Install UV (from the terminal)
-    ```console
-    cd ~
-    curl -LsSf https://astral.sh/uv/install.sh | sh
-    ```
-
-Install git (from the terminal)
-
-### Install Git 
-
-It is likely that `git` is already installed on your system. To check if you have git install, run this command in your terminal: 
-```console
-git --version
-```
-<p align='center'>
-<img src="https://learn.microsoft.com/nl-nl/windows/wsl/media/git-versions.gif" style="width:600px;height:auto;">
-</p>
-If you do not get a version message, install it by 
-with your systems installers: 
-
-(For WSL/Linux with an Ubuntu/debian distribution)
-```console
-sudo apt install git-all 
-``` 
-
-(For MacOS, If you don't have brew, install it https://brew.sh/)
-```console
-brew install git 
+cd ~/projects  # or wherever you keep projects
+git clone https://github.com/nancy1404/rod-pump-failure.git
+cd rod-pump-failure
 ```
 
-### Set up the Project Folder
+### 2️⃣ Set Up a Python Environment
 
-Open a terminal. Create a "projects" directory from your `$HOME` directory. 
-```console
-cd ~
-mkdir projects/
-``` 
+You can use either **UV** (recommended) or plain `pip`.
 
+#### Option A – Using UV
 
-### Clone the Project Repository
+If you have [UV](https://astral.sh/uv/) installed:
 
-First, navigate to your projects folder 
-```console
-cd ~/projects/ 
-``` 
-
-From the browser, navigate to the GitHub repository for your project. Clone the project 
-by clicking the green "Code" button. Select "HTTPS" and copy the line in the text box. 
-
-<p align="center">
-<img src="./docs/imgs/screenshot-clone-repo.png" width='400x'>
-</p>
-
-On your terminal, navigate to the projects folder and clone the repository. 
-
-```console
-cd ~/projects/
-git clone https://github.com/chaconnb/NSC325_GROUP1.git # this is an example
-```
-
-Navigate to the newly cloned repository and open VSCode from the repository root folder. 
-```console
-cd ~/projects/<your-repo-name>
-code . 
-``` 
-
-### Set up Development Environment
-
-With UV installed, you can set up the development environment by running this 
-command in the project root directory: 
-```console 
+```bash
 uv sync
-``` 
-This will set up a Python virtual environment and install any dependencies listed in 
-the `pyproject.toml`. To activate the virtual environment on your terminal, run: 
-```console
-source .venv/bin/activate 
-``` 
+```
 
-### Setting up a local Jupyter Notebook
-You can use VSCode to run Jupyter notebooks. Read the VSCode docs for more information. 
-https://code.visualstudio.com/docs/datascience/jupyter-notebooks 
+This will create a virtual environment (e.g. `.venv/`) and install dependencies from `pyproject.toml` / `uv.lock`.
 
-You will need to set up the kernel. We suggest you use the local virtual environment we 
-set up with UV. Follow these instructions on how to use your virtual environment in your 
+Activate the environment (typical Mac/Linux):
 
-<p align='center'>
-<img src ="./docs/imgs/screenshot-select-kernel-source.png" width='600x'>
-</p>
+```bash
+source .venv/bin/activate
+```
 
-Jupyter notebook. VSCode should find and identify the project's virtual environment folder 
-and recommend it (i.e., it should be `.venv/bin/python`)
+#### Option B – Using pip
 
-<p align='center'>
-<img src="./docs/imgs/screenshot-suggested-kernel.png" width='600x'> 
-</p>
+If you prefer a regular `pip` workflow:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+````
+
+### 3️⃣ Open the Project in VS Code
+
+From the repo root:
+
+```bash
+code .
+````
+
+- Install the **Python** and **Jupyter** extensions if prompted.  
+- Select the `.venv` Python interpreter as the kernel for all notebooks.  
+
+---
+
+### 4️⃣ Run Notebooks in Order (Recommended Workflow)
+
+If you have a dataset with the same structure as the original Conoco file, run the notebooks in this order:
+
+1. `notebooks/data_cleaning.ipynb`  
+2. `notebooks/EDA.ipynb`  
+3. `notebooks/feature_selection.ipynb`  
+4. `notebooks/updated2_analysis.ipynb`  
+5. `notebooks/EDA_Modeling_Final.ipynb`  
+
+Each notebook contains comments and markdown cells that describe the logic and decisions (e.g., transformations, model choices, thresholds).
+
+---
+
+## Developer Notes
+
+- **Tech stack:** Python, pandas, NumPy, scikit-learn, matplotlib, seaborn, imbalanced-learn, tqdm  
+- **Versioning:** `pyproject.toml` + `uv.lock` for reproducible environments  
+- **Code organization:**
+  - Exploratory work is kept in **notebooks**  
+  - Reusable helpers live under `src/nsc325_group1/`  
+
+If you’re a recruiter or collaborator and want more detail on my specific contributions (data cleaning, feature engineering, model selection, uncertainty analysis), feel free to reach out via GitHub or LinkedIn.
+
