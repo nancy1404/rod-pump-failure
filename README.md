@@ -123,7 +123,7 @@ If you prefer a regular `pip` workflow:
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-````
+```
 
 ### 3️⃣ Open the Project in VS Code
 
@@ -131,7 +131,7 @@ From the repo root:
 
 ```bash
 code .
-````
+```
 
 - Install the **Python** and **Jupyter** extensions if prompted.  
 - Select the `.venv` Python interpreter as the kernel for all notebooks.  
